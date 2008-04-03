@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: JsonRpcService::Service::Request::Post</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">JsonRpcService::Service::Request::Post</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../../../files/lib/json_rpc_service_rb.html">
+                lib/json_rpc_service.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                Request
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+An instance of this class is returned when the request is a POST. Upon
+initialisation, the request is parsed according to the specifications of a
+JSON-RPC POST request.
+</p>
+
+    </div>
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000028">new</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000028" class="method-detail">
+        <a name="M000028"></a>
+
+        <div class="method-heading">
+          <a href="#M000028" class="method-signature">
+          <span class="method-name">new</span><span class="method-args">(service, req, par)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000028-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000028-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 335</span>
+335:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">service</span>, <span class="ruby-identifier">req</span>, <span class="ruby-identifier">par</span>)
+336:           <span class="ruby-keyword kw">super</span> <span class="ruby-identifier">service</span>, <span class="ruby-identifier">req</span>, <span class="ruby-identifier">par</span>
+337:           <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-value str">&quot;Content-Type header must be application/json&quot;</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">env</span>[<span class="ruby-value str">'HTTP_CONTENT_TYPE'</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">'application/json'</span>
+338:           <span class="ruby-keyword kw">begin</span>
+339:             <span class="ruby-identifier">body</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">raw_post</span>
+340:           <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+341:             <span class="ruby-identifier">set_error</span> <span class="ruby-value">999</span>, <span class="ruby-value str">&quot;JSON did not parse&quot;</span> 
+342:             <span class="ruby-keyword kw">return</span>
+343:           <span class="ruby-keyword kw">end</span>
+344:           <span class="ruby-identifier">set_error</span> <span class="ruby-value">999</span>, <span class="ruby-value str">'JSON-RPC client protocol version must be specified in POSTs'</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">body</span>[<span class="ruby-value str">&quot;version&quot;</span>]
+345:           <span class="ruby-ivar">@id</span> = <span class="ruby-identifier">body</span>[<span class="ruby-value str">&quot;id&quot;</span>]
+346:           <span class="ruby-ivar">@fun</span> = <span class="ruby-identifier">body</span>[<span class="ruby-value str">&quot;method&quot;</span>]
+347:           <span class="ruby-identifier">set_error</span> <span class="ruby-value">999</span>, <span class="ruby-value str">'Method not specified'</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@fun</span>
+348:           <span class="ruby-identifier">args</span> = <span class="ruby-identifier">body</span>[<span class="ruby-value str">&quot;params&quot;</span>]
+349:           <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">args</span>
+350:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Array</span>
+351:             <span class="ruby-ivar">@args_pos</span> = <span class="ruby-identifier">args</span>
+352:           <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Hash</span>
+353:             <span class="ruby-ivar">@args_named</span> = <span class="ruby-identifier">args</span>
+354:           <span class="ruby-keyword kw">else</span>
+355:             <span class="ruby-identifier">set_error</span> <span class="ruby-value">999</span>, <span class="ruby-value str">'Params must be JSON Object or Array'</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">args</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">args</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">args</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>)
+356:           <span class="ruby-keyword kw">end</span>
+357:         <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

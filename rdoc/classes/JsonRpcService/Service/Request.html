@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Class: JsonRpcService::Service::Request</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+    <div id="classHeader">
+        <table class="header-table">
+        <tr class="top-aligned-row">
+          <td><strong>Class</strong></td>
+          <td class="class-name-in-header">JsonRpcService::Service::Request</td>
+        </tr>
+        <tr class="top-aligned-row">
+            <td><strong>In:</strong></td>
+            <td>
+                <a href="../../../files/lib/json_rpc_service_rb.html">
+                lib/json_rpc_service.rb
+                </a>
+        <br />
+            </td>
+        </tr>
+
+        <tr class="top-aligned-row">
+            <td><strong>Parent:</strong></td>
+            <td>
+                Object
+            </td>
+        </tr>
+        </table>
+    </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <p>
+This class encapsulates a request to the JSON-RPC server. It has two main
+subclasses, <a href="Request/Get.html">Get</a> and <a
+href="Request/Post.html">Post</a>, and an auxiliary one, <a
+href="Request/Erroneous.html">Erroneous</a> (for requests which are too
+garbled to decipher).
+</p>
+
+    </div>
+
+
+   </div>
+
+    <div id="method-list">
+      <h3 class="section-bar">Methods</h3>
+
+      <div class="name-list">
+      <a href="#M000024">apply</a>&nbsp;&nbsp;
+      <a href="#M000023">canonicalise_args</a>&nbsp;&nbsp;
+      <a href="#M000020">create</a>&nbsp;&nbsp;
+      <a href="#M000021">new</a>&nbsp;&nbsp;
+      <a href="#M000025">response</a>&nbsp;&nbsp;
+      <a href="#M000022">set_error</a>&nbsp;&nbsp;
+      </div>
+    </div>
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+    <div id="class-list">
+      <h3 class="section-bar">Classes and Modules</h3>
+
+      Class <a href="Request/Erroneous.html" class="link">JsonRpcService::Service::Request::Erroneous</a><br />
+Class <a href="Request/Get.html" class="link">JsonRpcService::Service::Request::Get</a><br />
+Class <a href="Request/Post.html" class="link">JsonRpcService::Service::Request::Post</a><br />
+
+    </div>
+
+
+
+
+    <div id="attribute-list">
+      <h3 class="section-bar">Attributes</h3>
+
+      <div class="name-list">
+        <table>
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">status_code</td>
+          <td class="context-item-value">&nbsp;[R]&nbsp;</td>
+          <td class="context-item-desc"></td>
+        </tr>
+        </table>
+      </div>
+    </div>
+      
+
+
+    <!-- if method_list -->
+    <div id="methods">
+      <h3 class="section-bar">Public Class methods</h3>
+
+      <div id="method-M000020" class="method-detail">
+        <a name="M000020"></a>
+
+        <div class="method-heading">
+          <a href="#M000020" class="method-signature">
+          <span class="method-name">create</span><span class="method-args">(service, req, par)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+This class method takes a request and returns a <a
+href="Request/Get.html">Get</a> object if the request is a GET, a <a
+href="Request/Post.html">Post</a> object if the request is a POST, and an
+<a href="Request/Erroneous.html">Erroneous</a> otherwise. If the request is
+erroneous (which applies to all three classes), it will be marked as such.
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000020-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000020-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 159</span>
+159:       <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">service</span>, <span class="ruby-identifier">req</span>, <span class="ruby-identifier">par</span>)
+160:         <span class="ruby-identifier">par</span> = <span class="ruby-identifier">par</span>.<span class="ruby-identifier">clone</span>
+161:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">get?</span>
+162:           <span class="ruby-constant">Get</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">service</span>, <span class="ruby-identifier">req</span>, <span class="ruby-identifier">par</span>
+163:         <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">post?</span>
+164:           <span class="ruby-constant">Post</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">service</span>, <span class="ruby-identifier">req</span>, <span class="ruby-identifier">par</span>
+165:         <span class="ruby-keyword kw">else</span>
+166:           <span class="ruby-constant">Erroneous</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">service</span>, <span class="ruby-identifier">req</span>, <span class="ruby-identifier">par</span>, <span class="ruby-value">999</span>, <span class="ruby-value str">'Only POST and GET supported'</span>
+167:         <span class="ruby-keyword kw">end</span>
+168:       <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000021" class="method-detail">
+        <a name="M000021"></a>
+
+        <div class="method-heading">
+          <a href="#M000021" class="method-signature">
+          <span class="method-name">new</span><span class="method-args">(service, req, par)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Initialises the request and checks that the request as received from the
+client conforms to the HTTP header requirements common to both GET and POST
+requests. If the request is non-conforming, marks it as erroneous.
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000021-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000021-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 177</span>
+177:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">service</span>, <span class="ruby-identifier">req</span>, <span class="ruby-identifier">par</span>)
+178:         <span class="ruby-ivar">@service</span> = <span class="ruby-identifier">service</span>
+179:         <span class="ruby-ivar">@req</span> = <span class="ruby-identifier">req</span>
+180:         <span class="ruby-identifier">par</span>.<span class="ruby-identifier">delete</span> <span class="ruby-value str">'controller'</span>     <span class="ruby-comment cmt"># We don't want this in our arg list</span>
+181:         <span class="ruby-identifier">par</span>.<span class="ruby-identifier">delete</span> <span class="ruby-value str">'action'</span>         <span class="ruby-comment cmt"># We don't want this in our arg list</span>
+182:         <span class="ruby-ivar">@par</span> = <span class="ruby-identifier">par</span>
+183:         <span class="ruby-ivar">@id</span> = <span class="ruby-keyword kw">nil</span>
+184:         <span class="ruby-ivar">@fun</span> <span class="ruby-operator">||=</span> <span class="ruby-keyword kw">nil</span>
+185:         <span class="ruby-ivar">@args_pos</span> = []
+186:         <span class="ruby-ivar">@args_named</span> = {}
+187:         <span class="ruby-ivar">@result</span> = <span class="ruby-keyword kw">nil</span>
+188:         <span class="ruby-ivar">@error</span> = <span class="ruby-keyword kw">nil</span>
+189:         <span class="ruby-ivar">@status_code</span> = <span class="ruby-keyword kw">nil</span>          <span class="ruby-comment cmt"># Set to non-NIL if not 200</span>
+190:         <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-value str">&quot;User-Agent header not specified&quot;</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">env</span>[<span class="ruby-value str">'HTTP_USER_AGENT'</span>]
+191:         <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-value str">&quot;Accept header must be application/json&quot;</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">req</span>.<span class="ruby-identifier">env</span>[<span class="ruby-value str">'HTTP_ACCEPT'</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">'application/json'</span>
+192:       <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-bar">Public Instance methods</h3>
+
+      <div id="method-M000024" class="method-detail">
+        <a name="M000024"></a>
+
+        <div class="method-heading">
+          <a href="#M000024" class="method-signature">
+          <span class="method-name">apply</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Expects method and args to be set up: calls the method.
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000024-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000024-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 266</span>
+266:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">apply</span>
+267:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@error</span>
+268:         <span class="ruby-identifier">fun</span> = <span class="ruby-ivar">@service</span>.<span class="ruby-identifier">procs</span>[<span class="ruby-ivar">@fun</span>]
+269:         <span class="ruby-identifier">get</span> = <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Get</span>)
+270:         <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-node">&quot;This JSON-RPC service does not provide a '#{@fun}' method.&quot;</span>, (<span class="ruby-identifier">get</span> <span class="ruby-value">? </span><span class="ruby-value">404</span> <span class="ruby-operator">:</span> <span class="ruby-value">500</span>)) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">fun</span>
+271:         <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-value str">&quot;This method is not idempotent and can only be called using POST.&quot;</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">get</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-operator">!</span><span class="ruby-identifier">fun</span>[<span class="ruby-identifier">:idempotent</span>]
+272:         <span class="ruby-identifier">canonicalise_args</span> <span class="ruby-identifier">fun</span>
+273:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@error</span>
+274:         <span class="ruby-keyword kw">begin</span>
+275:           <span class="ruby-ivar">@result</span> = <span class="ruby-identifier">fun</span>[<span class="ruby-identifier">:proc</span>].<span class="ruby-identifier">call</span> <span class="ruby-operator">*</span><span class="ruby-ivar">@args_pos</span>
+276:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+277:           <span class="ruby-identifier">set_error</span> <span class="ruby-value">999</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>
+278:         <span class="ruby-keyword kw">end</span>
+279:         <span class="ruby-comment cmt"># If the procedure return type is the string &quot;nil&quot;, return nothing</span>
+280:         <span class="ruby-ivar">@result</span> = <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">fun</span>[<span class="ruby-identifier">:return</span>][<span class="ruby-identifier">:type</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">'nil'</span>
+281:       <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000023" class="method-detail">
+        <a name="M000023"></a>
+
+        <div class="method-heading">
+          <a href="#M000023" class="method-signature">
+          <span class="method-name">canonicalise_args</span><span class="method-args">(fun)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+<a href="Request/Get.html">Get</a> the arguments in shape: convert
+everything to a positional arglist. Processes the named parameters, storing
+their values in the positional arglist according to the procedure
+declaration data. Always type-checks the result.
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000023-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000023-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 212</span>
+212:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">canonicalise_args</span>(<span class="ruby-identifier">fun</span>)
+213:         <span class="ruby-identifier">procpars</span> = <span class="ruby-identifier">fun</span>[<span class="ruby-identifier">:params</span>] <span class="ruby-operator">||</span> {}
+214:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">procpars</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@args_named</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>
+215:           <span class="ruby-identifier">set_error</span> <span class="ruby-value">999</span>, <span class="ruby-value str">&quot;Parameters passed to method declared to take none.&quot;</span>
+216:           <span class="ruby-keyword kw">return</span>
+217:         <span class="ruby-keyword kw">end</span>
+218:         <span class="ruby-comment cmt"># Go through the declared arglist and populate the positional arglist</span>
+219:         <span class="ruby-identifier">procpars</span>.<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pp</span>, <span class="ruby-identifier">i</span><span class="ruby-operator">|</span>
+220:           <span class="ruby-identifier">argname</span> = <span class="ruby-identifier">pp</span>[<span class="ruby-identifier">:name</span>]
+221:           <span class="ruby-identifier">argtype</span> = <span class="ruby-identifier">pp</span>[<span class="ruby-identifier">:type</span>]
+222:           <span class="ruby-identifier">arg_named</span> = <span class="ruby-ivar">@args_named</span>.<span class="ruby-identifier">delete</span> <span class="ruby-identifier">argname</span>
+223:           <span class="ruby-identifier">arg_numbered</span> = <span class="ruby-ivar">@args_named</span>.<span class="ruby-identifier">delete</span> <span class="ruby-identifier">i</span>.<span class="ruby-identifier">to_s</span>
+224:           <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-node">&quot;You cannot set the parameter #{argname} both by name and position&quot;</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">arg_named</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">arg_numbered</span>
+225:           <span class="ruby-identifier">arg</span> = <span class="ruby-ivar">@args_pos</span>[<span class="ruby-identifier">i</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">arg_named</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">arg_numbered</span>
+226:           <span class="ruby-comment cmt"># Type-check arg</span>
+227:           <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">argtype</span>
+228:           <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'bit'</span>
+229:             <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-node">&quot;The arg #{argname} must be literally true or false (was #{arg.to_json})&quot;</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">arg</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">true</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">arg</span> <span class="ruby-operator">==</span> <span class="ruby-keyword kw">false</span>
+230:           <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'num'</span>
+231:             <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">arg</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Numeric</span>)
+232:               <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-identifier">arg_conv</span> = <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-keyword kw">nil</span>).<span class="ruby-identifier">to_s</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">arg</span>
+233:                 <span class="ruby-identifier">arg</span> = <span class="ruby-identifier">arg_conv</span>
+234:               <span class="ruby-keyword kw">elsif</span> <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>) <span class="ruby-operator">&amp;&amp;</span> (<span class="ruby-identifier">arg_conv</span> = <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">to_f</span> <span class="ruby-keyword kw">rescue</span> <span class="ruby-keyword kw">nil</span>).<span class="ruby-identifier">to_s</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">arg</span>
+235:                 <span class="ruby-identifier">arg</span> = <span class="ruby-identifier">arg_conv</span>
+236:               <span class="ruby-keyword kw">else</span>
+237:                 <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-node">&quot;The arg #{argname} must be numeric (was #{arg.to_json})&quot;</span>) 
+238:                 <span class="ruby-keyword kw">return</span>
+239:               <span class="ruby-keyword kw">end</span>
+240:             <span class="ruby-keyword kw">end</span>
+241:           <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'str'</span>
+242:             <span class="ruby-keyword kw">if</span> <span class="ruby-operator">!</span><span class="ruby-identifier">arg</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">String</span>)
+243:               <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Numeric</span>)
+244:                 <span class="ruby-identifier">arg</span> = <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">to_s</span>
+245:               <span class="ruby-keyword kw">else</span>
+246:                 <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-node">&quot;The arg #{argname} must be a string (was #{arg.to_json})&quot;</span>)
+247:                 <span class="ruby-keyword kw">return</span>
+248:               <span class="ruby-keyword kw">end</span>
+249:             <span class="ruby-keyword kw">end</span>
+250:           <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'arr'</span>
+251:             <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-node">&quot;The arg #{argname} must be an array (was #{arg.to_json})&quot;</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Array</span>)
+252:           <span class="ruby-keyword kw">when</span> <span class="ruby-value str">'obj'</span>
+253:             <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-node">&quot;The arg #{argname} must be a JSON object (was #{arg.to_json})&quot;</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">arg</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Hash</span>)
+254:           <span class="ruby-keyword kw">end</span>
+255:           <span class="ruby-comment cmt"># Set the positional arg</span>
+256:           <span class="ruby-ivar">@args_pos</span>[<span class="ruby-identifier">i</span>] <span class="ruby-operator">||=</span> <span class="ruby-identifier">arg</span>
+257:         <span class="ruby-keyword kw">end</span>
+258:         <span class="ruby-comment cmt"># The positional arglist should now be populated. The named arglist should be exhausted.</span>
+259:         <span class="ruby-identifier">set_error</span>(<span class="ruby-value">999</span>, <span class="ruby-node">&quot;Excess parameters passed (#{@args_named.to_json})&quot;</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@args_named</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">==</span> <span class="ruby-value">0</span>
+260:       <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000025" class="method-detail">
+        <a name="M000025"></a>
+
+        <div class="method-heading">
+          <a href="#M000025" class="method-signature">
+          <span class="method-name">response</span><span class="method-args">()</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+This method returns JSON ready to send to the client, after the result has
+been computed (which may have resulted in an error).
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000025-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000025-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 288</span>
+288:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">response</span>
+289:         <span class="ruby-identifier">response_parts</span> = []
+290:         <span class="ruby-identifier">response_parts</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'&quot;version&quot;: &quot;1.1&quot;'</span>
+291:         <span class="ruby-identifier">response_parts</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'&quot;id&quot;: '</span> <span class="ruby-operator">+</span> <span class="ruby-ivar">@id</span>.<span class="ruby-identifier">to_json</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@id</span>
+292:         <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@error</span>
+293:           <span class="ruby-identifier">response_parts</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'&quot;error&quot;: '</span> <span class="ruby-operator">+</span> {<span class="ruby-identifier">:name</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-value str">'JSONRPCError'</span>}.<span class="ruby-identifier">merge</span>(<span class="ruby-ivar">@error</span>).<span class="ruby-identifier">to_json</span>
+294:         <span class="ruby-keyword kw">else</span>
+295:           <span class="ruby-identifier">response_parts</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value str">'&quot;result&quot;: '</span> <span class="ruby-operator">+</span> <span class="ruby-ivar">@result</span>.<span class="ruby-identifier">to_json</span>
+296:         <span class="ruby-keyword kw">end</span>
+297:         <span class="ruby-value str">'{'</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">response_parts</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">', '</span>) <span class="ruby-operator">+</span> <span class="ruby-value str">&quot;}\n&quot;</span>             
+298:       <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000022" class="method-detail">
+        <a name="M000022"></a>
+
+        <div class="method-heading">
+          <a href="#M000022" class="method-signature">
+          <span class="method-name">set_error</span><span class="method-args">(error_code, msg, status_code=nil)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+Associates an error with a request. Only the first error is recorded.
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000022-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000022-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 199</span>
+199:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set_error</span>(<span class="ruby-identifier">error_code</span>, <span class="ruby-identifier">msg</span>, <span class="ruby-identifier">status_code</span>=<span class="ruby-keyword kw">nil</span>)
+200:         <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@error</span>
+201:         <span class="ruby-ivar">@error</span> = {<span class="ruby-identifier">:code</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">error_code</span>, <span class="ruby-identifier">:message</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">msg</span>} 
+202:         <span class="ruby-ivar">@status_code</span> = <span class="ruby-identifier">status_code</span> <span class="ruby-operator">||</span> <span class="ruby-value">500</span>
+203:       <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>File: README</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" href=".././rdoc-style.css" type="text/css" media="screen" />
+  <script type="text/javascript">
+  // <![CDATA[
+
+  function popupCode( url ) {
+    window.open(url, "Code", "resizable=yes,scrollbars=yes,toolbar=no,status=no,height=150,width=400")
+  }
+
+  function toggleCode( id ) {
+    if ( document.getElementById )
+      elem = document.getElementById( id );
+    else if ( document.all )
+      elem = eval( "document.all." + id );
+    else
+      return false;
+
+    elemStyle = elem.style;
+    
+    if ( elemStyle.display != "block" ) {
+      elemStyle.display = "block"
+    } else {
+      elemStyle.display = "none"
+    }
+
+    return true;
+  }
+  
+  // Make codeblocks hidden by default
+  document.writeln( "<style type=\"text/css\">div.method-source-code { display: none }</style>" )
+  
+  // ]]>
+  </script>
+
+</head>
+<body>
+
+
+
+  <div id="fileHeader">
+    <h1>README</h1>
+    <table class="header-table">
+    <tr class="top-aligned-row">
+      <td><strong>Path:</strong></td>
+      <td>README
+      </td>
+    </tr>
+    <tr class="top-aligned-row">
+      <td><strong>Last Update:</strong></td>
+      <td>Thu Jul 12 10:55:36 +0200 2007</td>
+    </tr>
+    </table>
+  </div>
+  <!-- banner header -->
+
+  <div id="bodyContent">
+
+
+
+  <div id="contextContent">
+
+    <div id="description">
+      <h1>JsonRpc</h1>
+<p>
+This is a complete implementation of the JSON-RPC 1.1 protocol, as
+described in the JSON-RPC 1.1 Specification of 7 August 2007, which may be
+found at <a
+href="http://json-rpc.org/wd/JSON-RPC-1-1-WD-20060807.html">json-rpc.org/wd/JSON-RPC-1-1-WD-20060807.html</a>.
+</p>
+<p>
+The implementation consists of two parts: a service side and a client side.
+The server part is written specifically for Ruby on Rails, but the client
+does not really require Rails. A Rails application may choose to act as a
+service provider, as a client, or both.
+</p>
+<h2>Server Side</h2>
+<p>
+A Rails app may host any number of services. A service is declared in a
+controller, e.g.:
+</p>
+<pre>
+        class ExampleServiceController &lt; ApplicationController
+
+          json_rpc_service :name =&gt; 'DemoService',                                 # required
+                           :id =&gt; 'urn:uuid:fdba4820-276b-11dc-ab85-0002a5d5c51b', # required
+                           :version =&gt; '0.1',                                      # optional
+                           :summary =&gt; 'A simple demonstration service.',          # optional
+                           :help =&gt; 'http://127.0.0.1:3000/services/index.html',   # optional
+                           :address =&gt; 'http://127.0.0.1:3000/services'            # optional
+
+          json_rpc_procedure :name =&gt; 'sum', :proc =&gt; :+,                          # required
+                             :summary =&gt; 'Sums two numbers.',                      # optional
+                             :help =&gt; 'http://127.0.0.1:3000/services/sum.html',   # optional
+                             :idempotent =&gt; true,                                  # optional
+                             :params =&gt; [{:name =&gt; 'a', :type =&gt; 'num'},           # optional
+                                         {:name =&gt; 'b', :type =&gt; 'num'}],          # optional
+                             :return =&gt; {:type =&gt; 'num'}                           # optional
+
+          json_rpc_procedure :name =&gt; 'time', :proc =&gt; lambda { Time.now.to_s }
+
+        end
+</pre>
+<p>
+For the exact meaning of the args, read the JSON-RPC 1.1 specification -
+it&#8216;s very straightforward.
+</p>
+<p>
+Create a controller for each service you need. Then declare routes for them
+in Rails&#8217; config/routes.rb file:
+</p>
+<pre>
+        ActionController::Routing::Routes.draw do |map|
+
+          map.connect 'services/*method', :controller =&gt; 'example_service',
+                      :action =&gt; 'receive_json_rpc_request'
+
+        end
+</pre>
+<p>
+<tt>services</tt> is the external name of the service (it can be anything,
+of course). The complete URI to your service will be something like <a
+href="http://www.yoursite.com/services">www.yoursite.com/services</a>.
+</p>
+<p>
+Please note that the +:action+ arg must have the exact value indicated
+above, and the route string must end with &#8217;/*method&#8217;. In future
+versions there might be a helper to create JSON-RPC routes, but as yet that
+piece of syntactic sugar is not available.
+</p>
+<h2>Client Side</h2>
+<p>
+The client side of things is the module <a
+href="../classes/JsonRpcClient.html">JsonRpcClient</a>. To connect to a
+service as defined above (locally on your computer or anywhere in the
+world), define a class to encapsulate your remote calls:
+</p>
+<pre>
+        class Yonder &lt; JsonRpcClient
+          json_rpc_service 'http://www.yoursite.com/services'
+        end
+</pre>
+<p>
+If you want a persistent connection, use
+</p>
+<pre>
+        class Yonder &lt; JsonRpcClient
+      json_rpc_service 'http://www.yoursite.com/services', :persistent =&gt; true
+        end
+</pre>
+<p>
+instead. If you do, then you must close the connection when you are
+finished, using
+</p>
+<pre>
+        Yonder.close_service
+</pre>
+<p>
+You can now call procedures remotely on your new class as the receiving
+object:
+</p>
+<pre>
+        Yonder.time
+        Yonder.sum 24, 6
+        Yonder.sum :a =&gt; 24, :b =&gt; 6
+        Yonder.sum :b =&gt; 6, :a =&gt; 24
+        Yonder.sum :b =&gt; 6, '0' =&gt; 24
+        Yonder.sum '0' =&gt; 24, '1' =&gt; 6
+</pre>
+<p>
+Note that all the calls to <tt>sum</tt> are equivalent. For further
+information, see the JSON-RPC 1.1 specifications. The use of named
+arguments is encouraged.
+</p>
+<p>
+NB: If at all possible, use an IP number in the URI instead of a host name,
+as the Net::HTTP library can be slow in resolving addresses, which may
+render your requests two magnitudes slower.
+</p>
+<p>
+Also note that your JSON-RPC client class, &quot;Yonder&quot; in this
+example, never is instantiated.
+</p>
+<h3>Service Description</h3>
+<p>
+When the client is created, it will connect to its service and download its
+Service Description. This makes the JSON-RPC 1.1 client interface
+self-configuring. You can obtain the Service Description object by calling
+</p>
+<pre>
+        Yonder.system_describe
+</pre>
+<p>
+which will return a hash. The JSON-RPC specification requires that this
+method be called &#8216;system.describe&#8217;, but as this is not possible
+in Ruby the period has been replaced by an underline character.
+</p>
+<h3>Parameter coercion</h3>
+<p>
+Limited conversion between parameter types will be performed: the JSON-RPC
+interface will convert between numeric and string types as necessary,
+provided there is no ambiguity and no loss of precision. Parameter types
+are checked by the services and errors returned if there is a type mismatch
+- except for strings and numbers as described above.
+</p>
+<h3>GET and POST</h3>
+<p>
+The plugin will make GET requests for procedures which are known to be
+idempotent (roughly: which return the same result for the same parameters
+always, and which do not mutate any data). Procedures are declared
+idempotent on the service side. For all other procedures the plugin will
+choose do to a POST. They are equivalent in speed, but GET posts have the
+added advantage of being cacheable by proxies, etc.
+</p>
+<h3>Speed</h3>
+<p>
+The JSON-RPC 1.1 protocol is very lightweight. The JSON-RPC server side,
+under Rails, is able to process about 4000 requests per second on my 2.16
+GHz Intel Core Duo iMac. The client side is comparable in speed, but the
+determining factor in this case is the Net:HTTP library, which can be
+unnecessarily slow. It is important to use an IP number instead of a host
+name, for instance. On my system, the client side can generate between 500
+and 1000 requests per second. Note that these figures apply to the
+production environment, not the development environment, which of course is
+slower.
+</p>
+<p>
+In future, a different HTTP library than Net::HTTP may be used on the
+client side.
+</p>
+<pre>
+        Peter Bengtson (peter.bengtson@adocca.com)
+        Adocca Entertainment AB Sweden
+        http://www.adocca.com, http://trig.com
+</pre>
+
+    </div>
+
+
+   </div>
+
+
+  </div>
+
+
+    <!-- if includes -->
+
+    <div id="section">
+
+
+
+
+
+      
+
+
+    <!-- if method_list -->
+
+
+  </div>
+
+
+<div id="validator-badges">
+  <p><small><a href="http://validator.w3.org/check/referer">[Validate]</a></small></p>
+</div>
+
+</body>
+</html>

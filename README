@@ -1,0 +1,135 @@
+= JsonRpc
+
+This is a complete implementation of the JSON-RPC 1.1 protocol, as described in
+the JSON-RPC 1.1 Specification of 7 August 2007, which may be found at
+http://json-rpc.org/wd/JSON-RPC-1-1-WD-20060807.html.
+
+The implementation consists of two parts: a service side and a client side. The
+server part is written specifically for Ruby on Rails, but the client does not really
+require Rails. A Rails application may choose to act as a service provider,
+as a client, or both.
+
+
+== Server Side
+
+A Rails app may host any number of services. A service is declared in a controller,
+e.g.:
+
+	class ExampleServiceController < ApplicationController
+  
+	  json_rpc_service :name => 'DemoService',                                 # required
+	                   :id => 'urn:uuid:fdba4820-276b-11dc-ab85-0002a5d5c51b', # required
+	                   :version => '0.1',                                      # optional
+	                   :summary => 'A simple demonstration service.',          # optional
+	                   :help => 'http://127.0.0.1:3000/services/index.html',   # optional
+	                   :address => 'http://127.0.0.1:3000/services'            # optional
+
+	  json_rpc_procedure :name => 'sum', :proc => :+,                          # required
+	                     :summary => 'Sums two numbers.',                      # optional
+	                     :help => 'http://127.0.0.1:3000/services/sum.html',   # optional
+	                     :idempotent => true,                                  # optional
+	                     :params => [{:name => 'a', :type => 'num'},           # optional
+	                                 {:name => 'b', :type => 'num'}],          # optional
+	                     :return => {:type => 'num'}                           # optional
+
+	  json_rpc_procedure :name => 'time', :proc => lambda { Time.now.to_s }
+  
+	end
+	
+For the exact meaning of the args, read the JSON-RPC 1.1 specification - it's very
+straightforward. 
+
+Create a controller for each service you need. Then declare routes for them in Rails'
+config/routes.rb file:
+
+	ActionController::Routing::Routes.draw do |map|
+  
+	  map.connect 'services/*method', :controller => 'example_service', 
+	              :action => 'receive_json_rpc_request'
+
+	end
+
++services+ is the external name of the service (it can be anything, of course). 
+The complete URI to your service will be something like http://www.yoursite.com/services.
+
+Please note that the +:action+ arg must have the exact value indicated above, and the
+route string must end with '/*method'. In future versions there might be a helper to 
+create JSON-RPC routes, but as yet that piece of syntactic sugar is not available.
+
+
+== Client Side
+
+The client side of things is the module JsonRpcClient. To connect to a service as defined
+above (locally on your computer or anywhere in the world), define a class to encapsulate
+your remote calls:
+
+
+	class Yonder < JsonRpcClient
+	  json_rpc_service 'http://www.yoursite.com/services'
+	end
+			
+You can now call procedures remotely on your new class as the receiving object:
+
+	Yonder.time
+	Yonder.sum 24, 6
+	Yonder.sum :a => 24, :b => 6
+	Yonder.sum :b => 6, :a => 24
+	Yonder.sum :b => 6, '0' => 24
+	Yonder.sum '0' => 24, '1' => 6
+	
+Note that all the calls to +sum+ are equivalent. For further information, see the JSON-RPC 1.1 
+specifications. The use of named arguments is encouraged.
+
+NB: If at all possible, use an IP number in the URI instead of a host name, as the Net::HTTP
+library can be slow in resolving addresses, which may render your requests two magnitudes 
+slower.
+
+Also note that your JSON-RPC client class, "Yonder" in this example, never is instantiated.
+
+
+=== Service Description
+
+When the client is created, it will connect to its service and download its Service Description.
+This makes the JSON-RPC 1.1 client interface self-configuring. You can obtain the Service Description
+object by calling
+
+ 	Yonder.system_describe
+
+which will return a hash. The JSON-RPC specification requires that this method be called
+'system.describe', but as this is not possible in Ruby the period has been replaced by an
+underline character. This is only on the Ruby client side; the server, which is completely
+standard compliant, will of course respond as required to 'system.describe'.
+
+
+=== Parameter coercion
+
+Limited conversion between parameter types will be performed: the JSON-RPC interface will convert
+between numeric and string types as necessary, provided there is no ambiguity and no loss of precision.
+Parameter types are checked by the services and errors returned if there is a type mismatch - except
+for strings and numbers as described above.
+
+
+=== GET and POST
+
+The plugin will make GET requests for procedures which are known to be idempotent (roughly: which
+return the same result for the same parameters always, and which do not mutate any data). Procedures
+are declared idempotent on the service side. For all other procedures the plugin will choose do to
+a POST. They are equivalent in speed, but GET posts have the added advantage of being cacheable by
+proxies, etc.
+
+
+=== Speed
+
+The JSON-RPC 1.1 protocol is very lightweight. The JSON-RPC server side, under Rails, is able to
+process about 4000 requests per second on my 2.16 GHz Intel Core Duo iMac. The client side is
+comparable in speed, but the determining factor in this case is the Net:HTTP library, which can be
+unnecessarily slow. It is important to use an IP number instead of a host name, for instance. On
+my system, the client side can generate between 500 and 1000 requests per second. Note that these
+figures apply to the production environment, not the development environment, which of course is
+slower.
+
+In future, a different HTTP library than Net::HTTP may be used on the client side.
+
+
+	Peter Bengtson (peter@peterbengtson.com)
+	
