@@ -86,6 +86,15 @@ slower.
 
 Also note that your JSON-RPC client class, "Yonder" in this example, never is instantiated.
 
+You can also pass a one-argument block to a remote procedure call:
+
+	Yonder.foo(bar, baz) { |x| x.kind_of?(Exception) ? scream(x) : process(x) }
+	
+If a block is present, the result of executing +foo+ on +bar+ and +baz+ will be yielded to the
+block. However, if for any reason an exception should occur at any point, including HTTP setup,
+remote evaluation or decoding of the JSON reply, the block will instead receive the exception.
+This allows you to program continuation style, or to implement execution queues for retries, etc.
+
 
 === Service Description
 

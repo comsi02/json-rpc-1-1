@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Thu Apr 17 15:58:20 +0200 2008</td>
+      <td>Thu Apr 17 16:37:37 +0200 2008</td>
     </tr>
     </table>
   </div>
@@ -173,6 +173,20 @@ render your requests two magnitudes slower.
 <p>
 Also note that your JSON-RPC client class, &quot;Yonder&quot; in this
 example, never is instantiated.
+</p>
+<p>
+You can also pass a one-argument block to a remote procedure call:
+</p>
+<pre>
+        Yonder.foo(bar, baz) { |x| x.kind_of?(Exception) ? scream(x) : process(x) }
+</pre>
+<p>
+If a block is present, the result of executing <tt>foo</tt> on <tt>bar</tt>
+and <tt>baz</tt> will be yielded to the block. However, if for any reason
+an exception should occur at any point, including HTTP setup, remote
+evaluation or decoding of the JSON reply, the block will instead receive
+the exception. This allows you to program continuation style, or to
+implement execution queues for retries, etc.
 </p>
 <h3>Service Description</h3>
 <p>

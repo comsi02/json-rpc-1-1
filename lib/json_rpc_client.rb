@@ -56,7 +56,10 @@ class JsonRpcClient
   # This allows us to call methods remotely with the same syntax as if they were local.
   # If your client object is +service+, you can simply evaluate +service.whatever(:a => 100, :b => [1,2,3])+
   # or whatever you need. Positional and named arguments are fully supported according
-  # to the JSON-RPC 1.1 specifications.
+  # to the JSON-RPC 1.1 specifications. You can pass a block to each call. If you do,
+  # the block will be yielded to using the return value of the call, or, if there is
+  # an exception, with the exception itself. This allows you to implement execution 
+  # queues or continuation style error handling, amongst other things. 
   #
   def self.method_missing(name, *args)
     system_describe unless @service_description
