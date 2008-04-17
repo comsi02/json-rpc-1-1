@@ -96,12 +96,12 @@ garbled to decipher).
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000024">apply</a>&nbsp;&nbsp;
-      <a href="#M000023">canonicalise_args</a>&nbsp;&nbsp;
-      <a href="#M000020">create</a>&nbsp;&nbsp;
-      <a href="#M000021">new</a>&nbsp;&nbsp;
-      <a href="#M000025">response</a>&nbsp;&nbsp;
-      <a href="#M000022">set_error</a>&nbsp;&nbsp;
+      <a href="#M000025">apply</a>&nbsp;&nbsp;
+      <a href="#M000024">canonicalise_args</a>&nbsp;&nbsp;
+      <a href="#M000021">create</a>&nbsp;&nbsp;
+      <a href="#M000022">new</a>&nbsp;&nbsp;
+      <a href="#M000026">response</a>&nbsp;&nbsp;
+      <a href="#M000023">set_error</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -144,11 +144,11 @@ Class <a href="Request/Post.html" class="link">JsonRpcService::Service::Request:
     <div id="methods">
       <h3 class="section-bar">Public Class methods</h3>
 
-      <div id="method-M000020" class="method-detail">
-        <a name="M000020"></a>
+      <div id="method-M000021" class="method-detail">
+        <a name="M000021"></a>
 
         <div class="method-heading">
-          <a href="#M000020" class="method-signature">
+          <a href="#M000021" class="method-signature">
           <span class="method-name">create</span><span class="method-args">(service, req, par)</span>
           </a>
         </div>
@@ -162,8 +162,8 @@ href="Request/Post.html">Post</a> object if the request is a POST, and an
 erroneous (which applies to all three classes), it will be marked as such.
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000020-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000020-source">
+            onclick="toggleCode('M000021-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000021-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 159</span>
 159:       <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">create</span>(<span class="ruby-identifier">service</span>, <span class="ruby-identifier">req</span>, <span class="ruby-identifier">par</span>)
@@ -181,11 +181,11 @@ erroneous (which applies to all three classes), it will be marked as such.
         </div>
       </div>
 
-      <div id="method-M000021" class="method-detail">
-        <a name="M000021"></a>
+      <div id="method-M000022" class="method-detail">
+        <a name="M000022"></a>
 
         <div class="method-heading">
-          <a href="#M000021" class="method-signature">
+          <a href="#M000022" class="method-signature">
           <span class="method-name">new</span><span class="method-args">(service, req, par)</span>
           </a>
         </div>
@@ -197,8 +197,8 @@ client conforms to the HTTP header requirements common to both GET and POST
 requests. If the request is non-conforming, marks it as erroneous.
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000021-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000021-source">
+            onclick="toggleCode('M000022-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000022-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 177</span>
 177:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">service</span>, <span class="ruby-identifier">req</span>, <span class="ruby-identifier">par</span>)
@@ -224,11 +224,11 @@ requests. If the request is non-conforming, marks it as erroneous.
 
       <h3 class="section-bar">Public Instance methods</h3>
 
-      <div id="method-M000024" class="method-detail">
-        <a name="M000024"></a>
+      <div id="method-M000025" class="method-detail">
+        <a name="M000025"></a>
 
         <div class="method-heading">
-          <a href="#M000024" class="method-signature">
+          <a href="#M000025" class="method-signature">
           <span class="method-name">apply</span><span class="method-args">()</span>
           </a>
         </div>
@@ -238,8 +238,8 @@ requests. If the request is non-conforming, marks it as erroneous.
 Expects method and args to be set up: calls the method.
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000024-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000024-source">
+            onclick="toggleCode('M000025-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000025-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 266</span>
 266:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">apply</span>
@@ -253,7 +253,7 @@ Expects method and args to be set up: calls the method.
 274:         <span class="ruby-keyword kw">begin</span>
 275:           <span class="ruby-ivar">@result</span> = <span class="ruby-identifier">fun</span>[<span class="ruby-identifier">:proc</span>].<span class="ruby-identifier">call</span> <span class="ruby-operator">*</span><span class="ruby-ivar">@args_pos</span>
 276:         <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
-277:           <span class="ruby-identifier">set_error</span> <span class="ruby-value">999</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span>
+277:           <span class="ruby-identifier">set_error</span> <span class="ruby-value">999</span>, <span class="ruby-identifier">e</span>.<span class="ruby-identifier">message</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>.<span class="ruby-identifier">join</span>(<span class="ruby-value str">&quot;\n&quot;</span>)
 278:         <span class="ruby-keyword kw">end</span>
 279:         <span class="ruby-comment cmt"># If the procedure return type is the string &quot;nil&quot;, return nothing</span>
 280:         <span class="ruby-ivar">@result</span> = <span class="ruby-keyword kw">nil</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">fun</span>[<span class="ruby-identifier">:return</span>][<span class="ruby-identifier">:type</span>] <span class="ruby-operator">==</span> <span class="ruby-value str">'nil'</span>
@@ -263,11 +263,11 @@ Expects method and args to be set up: calls the method.
         </div>
       </div>
 
-      <div id="method-M000023" class="method-detail">
-        <a name="M000023"></a>
+      <div id="method-M000024" class="method-detail">
+        <a name="M000024"></a>
 
         <div class="method-heading">
-          <a href="#M000023" class="method-signature">
+          <a href="#M000024" class="method-signature">
           <span class="method-name">canonicalise_args</span><span class="method-args">(fun)</span>
           </a>
         </div>
@@ -280,8 +280,8 @@ their values in the positional arglist according to the procedure
 declaration data. Always type-checks the result.
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000023-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000023-source">
+            onclick="toggleCode('M000024-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000024-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 212</span>
 212:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">canonicalise_args</span>(<span class="ruby-identifier">fun</span>)
@@ -338,11 +338,11 @@ declaration data. Always type-checks the result.
         </div>
       </div>
 
-      <div id="method-M000025" class="method-detail">
-        <a name="M000025"></a>
+      <div id="method-M000026" class="method-detail">
+        <a name="M000026"></a>
 
         <div class="method-heading">
-          <a href="#M000025" class="method-signature">
+          <a href="#M000026" class="method-signature">
           <span class="method-name">response</span><span class="method-args">()</span>
           </a>
         </div>
@@ -353,8 +353,8 @@ This method returns JSON ready to send to the client, after the result has
 been computed (which may have resulted in an error).
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000025-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000025-source">
+            onclick="toggleCode('M000026-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000026-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 288</span>
 288:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">response</span>
@@ -373,11 +373,11 @@ been computed (which may have resulted in an error).
         </div>
       </div>
 
-      <div id="method-M000022" class="method-detail">
-        <a name="M000022"></a>
+      <div id="method-M000023" class="method-detail">
+        <a name="M000023"></a>
 
         <div class="method-heading">
-          <a href="#M000022" class="method-signature">
+          <a href="#M000023" class="method-signature">
           <span class="method-name">set_error</span><span class="method-args">(error_code, msg, status_code=nil)</span>
           </a>
         </div>
@@ -387,8 +387,8 @@ been computed (which may have resulted in an error).
 Associates an error with a request. Only the first error is recorded.
 </p>
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000022-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000022-source">
+            onclick="toggleCode('M000023-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000023-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 199</span>
 199:       <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">set_error</span>(<span class="ruby-identifier">error_code</span>, <span class="ruby-identifier">msg</span>, <span class="ruby-identifier">status_code</span>=<span class="ruby-keyword kw">nil</span>)

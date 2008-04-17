@@ -56,7 +56,7 @@
     </tr>
     <tr class="top-aligned-row">
       <td><strong>Last Update:</strong></td>
-      <td>Thu Jul 12 10:55:36 +0200 2007</td>
+      <td>Thu Apr 17 15:58:20 +0200 2008</td>
     </tr>
     </table>
   </div>
@@ -149,21 +149,6 @@ world), define a class to encapsulate your remote calls:
         end
 </pre>
 <p>
-If you want a persistent connection, use
-</p>
-<pre>
-        class Yonder &lt; JsonRpcClient
-      json_rpc_service 'http://www.yoursite.com/services', :persistent =&gt; true
-        end
-</pre>
-<p>
-instead. If you do, then you must close the connection when you are
-finished, using
-</p>
-<pre>
-        Yonder.close_service
-</pre>
-<p>
 You can now call procedures remotely on your new class as the receiving
 object:
 </p>
@@ -201,7 +186,10 @@ self-configuring. You can obtain the Service Description object by calling
 <p>
 which will return a hash. The JSON-RPC specification requires that this
 method be called &#8216;system.describe&#8217;, but as this is not possible
-in Ruby the period has been replaced by an underline character.
+in Ruby the period has been replaced by an underline character. This is
+only on the Ruby client side; the server, which is completely standard
+compliant, will of course respond as required to
+&#8216;system.describe&#8217;.
 </p>
 <h3>Parameter coercion</h3>
 <p>
@@ -237,9 +225,7 @@ In future, a different HTTP library than Net::HTTP may be used on the
 client side.
 </p>
 <pre>
-        Peter Bengtson (peter.bengtson@adocca.com)
-        Adocca Entertainment AB Sweden
-        http://www.adocca.com, http://trig.com
+        Peter Bengtson (peter@peterbengtson.com)
 </pre>
 
     </div>

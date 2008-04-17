@@ -94,7 +94,7 @@ JSON-RPC GET request.
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000026">new</a>&nbsp;&nbsp;
+      <a href="#M000027">new</a>&nbsp;&nbsp;
       </div>
     </div>
 
@@ -116,19 +116,19 @@ JSON-RPC GET request.
     <div id="methods">
       <h3 class="section-bar">Public Class methods</h3>
 
-      <div id="method-M000026" class="method-detail">
-        <a name="M000026"></a>
+      <div id="method-M000027" class="method-detail">
+        <a name="M000027"></a>
 
         <div class="method-heading">
-          <a href="#M000026" class="method-signature">
+          <a href="#M000027" class="method-signature">
           <span class="method-name">new</span><span class="method-args">(service, req, par)</span>
           </a>
         </div>
       
         <div class="method-description">
           <p><a class="source-toggle" href="#"
-            onclick="toggleCode('M000026-source');return false;">[Source]</a></p>
-          <div class="method-source-code" id="M000026-source">
+            onclick="toggleCode('M000027-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000027-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/json_rpc_service.rb, line 307</span>
 307:         <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">service</span>, <span class="ruby-identifier">req</span>, <span class="ruby-identifier">par</span>)
@@ -137,19 +137,21 @@ JSON-RPC GET request.
 310:           <span class="ruby-keyword kw">super</span> <span class="ruby-identifier">service</span>, <span class="ruby-identifier">req</span>, <span class="ruby-identifier">par</span>
 311:           <span class="ruby-identifier">set_error</span> <span class="ruby-value">999</span>, <span class="ruby-value str">&quot;Bad call&quot;</span> <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@fun</span>.<span class="ruby-identifier">length</span> <span class="ruby-operator">==</span> <span class="ruby-value">1</span>
 312:           <span class="ruby-ivar">@fun</span> = <span class="ruby-ivar">@fun</span>[<span class="ruby-value">0</span>]
-313:           <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@req</span>.<span class="ruby-identifier">env</span>[<span class="ruby-value str">'QUERY_STRING'</span>]
-314:           <span class="ruby-ivar">@req</span>.<span class="ruby-identifier">env</span>[<span class="ruby-value str">'QUERY_STRING'</span>].<span class="ruby-identifier">split</span>(<span class="ruby-value str">'&amp;'</span>).<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pair</span><span class="ruby-operator">|</span>
-315:             <span class="ruby-identifier">arg</span>, <span class="ruby-identifier">val</span> = <span class="ruby-identifier">pair</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;=&quot;</span>)
-316:             <span class="ruby-identifier">val</span> = <span class="ruby-constant">URI</span><span class="ruby-operator">::</span><span class="ruby-identifier">decode</span>(<span class="ruby-identifier">val</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">'+'</span>, <span class="ruby-value str">' '</span>)
-317:             <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">old</span> = <span class="ruby-ivar">@args_named</span>[<span class="ruby-identifier">arg</span>]
-318:             <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Array</span><span class="ruby-operator">:</span>  <span class="ruby-identifier">old</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">val</span>
-319:             <span class="ruby-keyword kw">when</span> <span class="ruby-keyword kw">nil</span><span class="ruby-operator">:</span>    <span class="ruby-ivar">@args_named</span>[<span class="ruby-identifier">arg</span>] = <span class="ruby-identifier">val</span>
-320:             <span class="ruby-keyword kw">else</span>        
-321:               <span class="ruby-ivar">@args_named</span>[<span class="ruby-identifier">arg</span>] = [<span class="ruby-identifier">old</span>, <span class="ruby-identifier">val</span>]
-322:             <span class="ruby-keyword kw">end</span>
-323:           <span class="ruby-keyword kw">end</span>
-324:           <span class="ruby-comment cmt"># Note that no suppression of 'nil' and 'false' is made for GET requests (only for POSTs)</span>
-325:         <span class="ruby-keyword kw">end</span>
+313:           <span class="ruby-identifier">query_string</span> = <span class="ruby-identifier">get_query_string</span> 
+314:           <span class="ruby-keyword kw">return</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">query_string</span>.<span class="ruby-identifier">blank?</span>
+315:           <span class="ruby-identifier">query_string</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">'&amp;'</span>).<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">pair</span><span class="ruby-operator">|</span>
+316:             <span class="ruby-identifier">arg</span>, <span class="ruby-identifier">val</span> = <span class="ruby-identifier">pair</span>.<span class="ruby-identifier">split</span>(<span class="ruby-value str">&quot;=&quot;</span>)
+317:             <span class="ruby-identifier">val</span> <span class="ruby-operator">||=</span> <span class="ruby-value str">''</span>            
+318:             <span class="ruby-identifier">val</span> = <span class="ruby-constant">URI</span><span class="ruby-operator">::</span><span class="ruby-identifier">decode</span>(<span class="ruby-identifier">val</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-value str">'+'</span>, <span class="ruby-value str">' '</span>)
+319:             <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">old</span> = <span class="ruby-ivar">@args_named</span>[<span class="ruby-identifier">arg</span>]
+320:             <span class="ruby-keyword kw">when</span> <span class="ruby-constant">Array</span><span class="ruby-operator">:</span>  <span class="ruby-identifier">old</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">val</span>
+321:             <span class="ruby-keyword kw">when</span> <span class="ruby-keyword kw">nil</span><span class="ruby-operator">:</span>    <span class="ruby-ivar">@args_named</span>[<span class="ruby-identifier">arg</span>] = <span class="ruby-identifier">val</span>
+322:             <span class="ruby-keyword kw">else</span>        
+323:               <span class="ruby-ivar">@args_named</span>[<span class="ruby-identifier">arg</span>] = [<span class="ruby-identifier">old</span>, <span class="ruby-identifier">val</span>]
+324:             <span class="ruby-keyword kw">end</span>
+325:           <span class="ruby-keyword kw">end</span>
+326:           <span class="ruby-comment cmt"># Note that no suppression of 'nil' and 'false' is done for GET requests (only for POSTs)</span>
+327:         <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
