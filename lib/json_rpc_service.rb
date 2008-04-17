@@ -382,7 +382,7 @@ module JsonRpcService
       # when the request neither is a GET nor a POST.
       #
       class Erroneous < Request
-        def initialize(req, par, code, msg)
+        def initialize(service, req, par, code, msg)
           super service, req, par
           set_error code, msg
         end
@@ -391,41 +391,3 @@ module JsonRpcService
     end # of Request
   end # of Service
 end # of JsonRpcService
-
-
-
-# For testing
-'
-curl -i -H "Accept: application/json" "http://localhost:3000/services/time"
-
-curl -i -H "Accept: application/json" -H "Content-Type: application/json"\
-     --data-binary "{ \"version\": \"1.1\",
-                      \"method\": \"time\"
-                    }" \
-     "http://localhost:3000/services"
-
-curl -i -H "Accept: application/json" \
-     "http://localhost:3000/services/time?city=london&scale=fahrenheit&city=zurich&city=new+york"
-     
-curl -i -H "Accept: application/json" "http://localhost:3000/services/sum?a=17&b=25"
-
-curl -i -H "Accept: application/json" -H "Content-Type: application/json"\
-     --data-binary "{ \"id\": \"4873ty87f74yr7\",
-                      \"version\": \"1.1\",
-                      \"method\": \"sum\",
-                      \"params\": [17, 25]
-                    }" \
-     "http://localhost:3000/services"
-
-curl -i -H "Accept: application/json" -H "Content-Type: application/json"\
-     --data-binary "{ \"version\": \"1.1\",
-                      \"method\": \"sum\",
-                      \"params\": { \"a\": 17, \"b\": 25}
-                    }" \
-     "http://localhost:3000/services"
-
-curl -i -H "Accept: application/json" -H "Content-Type: application/json"\
-     --data-binary "{ \"version\": \"1.1\", 
-                      \"method\": \"system.describe\" }" \
-     "http://localhost:3000/services"
-'

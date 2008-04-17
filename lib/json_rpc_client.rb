@@ -13,16 +13,16 @@ class JsonRpcClient
   # Our runtime error class.
   #
   class Error < RuntimeError; end
-  
+  class ServiceError < Error; end
+  class ServiceDown < Error; end
+  class NotAService < Error; end
+  class ServiceReturnsJunk < Error; end
   
   #
   # Execute this "declaration" with a string or URI object describing the base URI
   # of the JSON-RPC service you want to connect to, e.g. 'http://213.86.231.12/my_services'.
-  # NB: avoid host names at all costs, since Net::HTTP can be slow resolving them. Use raw
-  # IP numbers instead - the difference is in the order of a couple of magnitudes on my
-  # system. If you wish, pass :persistent => true to make the connection persistent. If you
-  # do, you are responsible for closing the HTTP connection when you are done, using 
-  # close_service(). If there is a proxy, pass :proxy => 'http://123.45.32.45:8080' or similar.
+  # NB: avoid DNS host names at all costs, since Net::HTTP can be slow in resolving them.
+  # If there is a proxy, pass :proxy => 'http://123.45.32.45:8080' or similar.
   #
   def self.json_rpc_service(base_uri, opts={})
     @uri = URI.parse base_uri
@@ -31,18 +31,26 @@ class JsonRpcClient
     @proxy = opts[:proxy] && URI.parse(opts[:proxy])
     @proxy_host = opts[:proxy] && @proxy.host
     @proxy_port = opts[:proxy] && @proxy.port
-    @http = opts[:persistent] && Net::HTTP.start(@host, @port, @proxy_host, @proxy_port)
     @procs = {}
     @get_procs = []
     @post_procs = []
     @uri
   end
   
-  
-  def self.close_service
-    @http.finish
-  end
-      
+  #
+  # Changes the URI for this service. Used in setups where several identical 
+  # services can be reached on different hosts.
+  #
+  def self.set_host(newhost=nil, newport=nil, newproxy=nil)
+    @uri.host = @host = newhost if newhost
+    @uri.port = @port = newport if newport
+    if newproxy
+      @proxy = URI.parse(newproxy)
+      @proxy_host = @proxy.host
+      @proxy_port = @proxy.port
+    end
+    @uri
+  end     
 
   #
   # This allows us to call methods remotely with the same syntax as if they were local.
@@ -55,11 +63,20 @@ class JsonRpcClient
     name = name.to_s
     req_wrapper = @get_procs.include?(name) ? Get.new(self, name, args) : Post.new(self, name, args)
     req = req_wrapper.req
-    Net::HTTP.start(@host, @port, @proxy_host, @proxy_port) do |http|
-      res = http.request req
-      json = JSON.parse res.body
-      raise Error, "JSON-RPC error #{json['error']['code']}: #{json['error']['message']}" if json['error']
-      json['result']
+    begin
+      begin
+        Net::HTTP.start(@host, @port, @proxy_host, @proxy_port) do |http|
+          res = http.request req
+          raise NotAService, "Returned #{res.content_type} rather than application/json" unless res.content_type == 'application/json'
+          json = JSON.parse(res.body) rescue raise(ServiceReturnsJunk)
+          raise ServiceError, "JSON-RPC error #{json['error']['code']}: #{json['error']['message']}" if json['error']
+          return (block_given? ? yield(json['result']) : json['result'])
+        end
+      rescue Errno::ECONNREFUSED
+        raise ServiceDown, "Connection refused"
+      end
+    rescue Exception => e
+      block_given? ? yield(e) : raise(e)
     end
   end
       
@@ -80,14 +97,6 @@ class JsonRpcClient
   end
       
       
-  #
-  # Scream if called the old way.
-  #
-  def initialize(base_uri, opts={})
-    raise "You are no longer supposed to instantiate classes inherited from JsonRpcClient."
-  end  
-  
-  
   #
   # This method is called automatically as soon as a client is created. It polls the
   # service for its +system.describe+ information, which the client uses to find out
