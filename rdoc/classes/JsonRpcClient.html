@@ -149,25 +149,30 @@ the base URI of the JSON-RPC service you want to connect to, e.g. &#8216;<a
 href="http://213.86.231.12/my_services">213.86.231.12/my_services</a>&#8217;.
 NB: avoid DNS host names at all costs, since Net::HTTP can be slow in
 resolving them. If there is a proxy, pass :proxy =&gt; &#8216;<a
-href="http://123.45.32.45:8080">123.45.32.45:8080</a>&#8217; or similar.
+href="http://123.45.32.45:8080">123.45.32.45:8080</a>&#8217; or similar. If
+you pass :no_auto_config =&gt; true, no attempt will be made to contact the
+service to obtain a description of its available services, which means POST
+will be used for all requests. This is sometimes useful when a server is
+non-compliant and does not provide a system.describe call.
 </p>
           <p><a class="source-toggle" href="#"
             onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000003-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 27</span>
-27:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">json_rpc_service</span>(<span class="ruby-identifier">base_uri</span>, <span class="ruby-identifier">opts</span>={})
-28:     <span class="ruby-ivar">@uri</span> = <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span> <span class="ruby-identifier">base_uri</span>
-29:     <span class="ruby-ivar">@host</span> = <span class="ruby-ivar">@uri</span>.<span class="ruby-identifier">host</span>
-30:     <span class="ruby-ivar">@port</span> = <span class="ruby-ivar">@uri</span>.<span class="ruby-identifier">port</span>
-31:     <span class="ruby-ivar">@proxy</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:proxy</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:proxy</span>])
-32:     <span class="ruby-ivar">@proxy_host</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:proxy</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@proxy</span>.<span class="ruby-identifier">host</span>
-33:     <span class="ruby-ivar">@proxy_port</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:proxy</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@proxy</span>.<span class="ruby-identifier">port</span>
-34:     <span class="ruby-ivar">@procs</span> = {}
-35:     <span class="ruby-ivar">@get_procs</span> = []
-36:     <span class="ruby-ivar">@post_procs</span> = []
-37:     <span class="ruby-ivar">@uri</span>
-38:   <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 32</span>
+32:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">json_rpc_service</span>(<span class="ruby-identifier">base_uri</span>, <span class="ruby-identifier">opts</span>={})
+33:     <span class="ruby-ivar">@uri</span> = <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span> <span class="ruby-identifier">base_uri</span>
+34:     <span class="ruby-ivar">@host</span> = <span class="ruby-ivar">@uri</span>.<span class="ruby-identifier">host</span>
+35:     <span class="ruby-ivar">@port</span> = <span class="ruby-ivar">@uri</span>.<span class="ruby-identifier">port</span>
+36:     <span class="ruby-ivar">@proxy</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:proxy</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:proxy</span>])
+37:     <span class="ruby-ivar">@proxy_host</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:proxy</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@proxy</span>.<span class="ruby-identifier">host</span>
+38:     <span class="ruby-ivar">@proxy_port</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:proxy</span>] <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@proxy</span>.<span class="ruby-identifier">port</span>
+39:     <span class="ruby-ivar">@procs</span> = {}
+40:     <span class="ruby-ivar">@get_procs</span> = []
+41:     <span class="ruby-ivar">@post_procs</span> = []
+42:     <span class="ruby-ivar">@no_auto_config</span> = <span class="ruby-identifier">opts</span>[<span class="ruby-identifier">:no_auto_config</span>]
+43:     <span class="ruby-ivar">@uri</span>
+44:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -198,28 +203,28 @@ other things.
             onclick="toggleCode('M000005-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000005-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 64</span>
-64:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">name</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
-65:     <span class="ruby-identifier">system_describe</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@service_description</span>
-66:     <span class="ruby-identifier">name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>
-67:     <span class="ruby-identifier">req_wrapper</span> = <span class="ruby-ivar">@get_procs</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">name</span>) <span class="ruby-operator">?</span> <span class="ruby-constant">Get</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">args</span>) <span class="ruby-operator">:</span> <span class="ruby-constant">Post</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">args</span>)
-68:     <span class="ruby-identifier">req</span> = <span class="ruby-identifier">req_wrapper</span>.<span class="ruby-identifier">req</span>
-69:     <span class="ruby-keyword kw">begin</span>
-70:       <span class="ruby-keyword kw">begin</span>
-71:         <span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTP</span>.<span class="ruby-identifier">start</span>(<span class="ruby-ivar">@host</span>, <span class="ruby-ivar">@port</span>, <span class="ruby-ivar">@proxy_host</span>, <span class="ruby-ivar">@proxy_port</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">http</span><span class="ruby-operator">|</span>
-72:           <span class="ruby-identifier">res</span> = <span class="ruby-identifier">http</span>.<span class="ruby-identifier">request</span> <span class="ruby-identifier">req</span>
-73:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">NotAService</span>, <span class="ruby-node">&quot;Returned #{res.content_type} rather than application/json&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">res</span>.<span class="ruby-identifier">content_type</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'application/json'</span>
-74:           <span class="ruby-identifier">json</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span>) <span class="ruby-keyword kw">rescue</span> <span class="ruby-identifier">raise</span>(<span class="ruby-constant">ServiceReturnsJunk</span>)
-75:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">ServiceError</span>, <span class="ruby-node">&quot;JSON-RPC error #{json['error']['code']}: #{json['error']['message']}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">json</span>[<span class="ruby-value str">'error'</span>]
-76:           <span class="ruby-keyword kw">return</span> (<span class="ruby-identifier">block_given?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">json</span>[<span class="ruby-value str">'result'</span>]) <span class="ruby-operator">:</span> <span class="ruby-identifier">json</span>[<span class="ruby-value str">'result'</span>])
-77:         <span class="ruby-keyword kw">end</span>
-78:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ECONNREFUSED</span>
-79:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">ServiceDown</span>, <span class="ruby-value str">&quot;Connection refused&quot;</span>
-80:       <span class="ruby-keyword kw">end</span>
-81:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
-82:       <span class="ruby-identifier">block_given?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">e</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">raise</span>(<span class="ruby-identifier">e</span>)
-83:     <span class="ruby-keyword kw">end</span>
-84:   <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 70</span>
+70:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">name</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+71:     <span class="ruby-identifier">system_describe</span> <span class="ruby-keyword kw">unless</span> (<span class="ruby-ivar">@no_auto_config</span> <span class="ruby-operator">||</span> <span class="ruby-ivar">@service_description</span>)
+72:     <span class="ruby-identifier">name</span> = <span class="ruby-identifier">name</span>.<span class="ruby-identifier">to_s</span>
+73:     <span class="ruby-identifier">req_wrapper</span> = <span class="ruby-ivar">@get_procs</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">name</span>) <span class="ruby-operator">?</span> <span class="ruby-constant">Get</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">args</span>) <span class="ruby-operator">:</span> <span class="ruby-constant">Post</span>.<span class="ruby-identifier">new</span>(<span class="ruby-keyword kw">self</span>, <span class="ruby-identifier">name</span>, <span class="ruby-identifier">args</span>)
+74:     <span class="ruby-identifier">req</span> = <span class="ruby-identifier">req_wrapper</span>.<span class="ruby-identifier">req</span>
+75:     <span class="ruby-keyword kw">begin</span>
+76:       <span class="ruby-keyword kw">begin</span>
+77:         <span class="ruby-constant">Net</span><span class="ruby-operator">::</span><span class="ruby-constant">HTTP</span>.<span class="ruby-identifier">start</span>(<span class="ruby-ivar">@host</span>, <span class="ruby-ivar">@port</span>, <span class="ruby-ivar">@proxy_host</span>, <span class="ruby-ivar">@proxy_port</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">http</span><span class="ruby-operator">|</span>
+78:           <span class="ruby-identifier">res</span> = <span class="ruby-identifier">http</span>.<span class="ruby-identifier">request</span> <span class="ruby-identifier">req</span>
+79:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">NotAService</span>, <span class="ruby-node">&quot;Returned #{res.content_type} rather than application/json&quot;</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-identifier">res</span>.<span class="ruby-identifier">content_type</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'application/json'</span>
+80:           <span class="ruby-identifier">json</span> = <span class="ruby-constant">JSON</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">res</span>.<span class="ruby-identifier">body</span>) <span class="ruby-keyword kw">rescue</span> <span class="ruby-identifier">raise</span>(<span class="ruby-constant">ServiceReturnsJunk</span>)
+81:           <span class="ruby-identifier">raise</span> <span class="ruby-constant">ServiceError</span>, <span class="ruby-node">&quot;JSON-RPC error #{json['error']['code']}: #{json['error']['message']}&quot;</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">json</span>[<span class="ruby-value str">'error'</span>]
+82:           <span class="ruby-keyword kw">return</span> (<span class="ruby-identifier">block_given?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">json</span>[<span class="ruby-value str">'result'</span>]) <span class="ruby-operator">:</span> <span class="ruby-identifier">json</span>[<span class="ruby-value str">'result'</span>])
+83:         <span class="ruby-keyword kw">end</span>
+84:       <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">ECONNREFUSED</span>
+85:         <span class="ruby-identifier">raise</span> <span class="ruby-constant">ServiceDown</span>, <span class="ruby-value str">&quot;Connection refused&quot;</span>
+86:       <span class="ruby-keyword kw">end</span>
+87:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+88:       <span class="ruby-identifier">block_given?</span> <span class="ruby-value">? </span><span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">e</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">raise</span>(<span class="ruby-identifier">e</span>)
+89:     <span class="ruby-keyword kw">end</span>
+90:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -243,10 +248,10 @@ descriptions
             onclick="toggleCode('M000007-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000007-source">
 <pre>
-     <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 98</span>
- 98:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">procs</span>
- 99:     <span class="ruby-ivar">@procs</span>
-100:   <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 104</span>
+104:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">procs</span>
+105:     <span class="ruby-ivar">@procs</span>
+106:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -269,10 +274,10 @@ The basic path of the service, i.e. &#8217;/services&#8217;.
             onclick="toggleCode('M000006-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000006-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 90</span>
-90:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">service_path</span>
-91:     <span class="ruby-ivar">@uri</span>.<span class="ruby-identifier">path</span>
-92:   <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 96</span>
+96:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">service_path</span>
+97:     <span class="ruby-ivar">@uri</span>.<span class="ruby-identifier">path</span>
+98:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -296,17 +301,17 @@ services can be reached on different hosts.
             onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000004-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 44</span>
-44:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">set_host</span>(<span class="ruby-identifier">newhost</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">newport</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">newproxy</span>=<span class="ruby-keyword kw">nil</span>)
-45:     <span class="ruby-ivar">@uri</span>.<span class="ruby-identifier">host</span> = <span class="ruby-ivar">@host</span> = <span class="ruby-identifier">newhost</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">newhost</span>
-46:     <span class="ruby-ivar">@uri</span>.<span class="ruby-identifier">port</span> = <span class="ruby-ivar">@port</span> = <span class="ruby-identifier">newport</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">newport</span>
-47:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">newproxy</span>
-48:       <span class="ruby-ivar">@proxy</span> = <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">newproxy</span>)
-49:       <span class="ruby-ivar">@proxy_host</span> = <span class="ruby-ivar">@proxy</span>.<span class="ruby-identifier">host</span>
-50:       <span class="ruby-ivar">@proxy_port</span> = <span class="ruby-ivar">@proxy</span>.<span class="ruby-identifier">port</span>
-51:     <span class="ruby-keyword kw">end</span>
-52:     <span class="ruby-ivar">@uri</span>
-53:   <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 50</span>
+50:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">set_host</span>(<span class="ruby-identifier">newhost</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">newport</span>=<span class="ruby-keyword kw">nil</span>, <span class="ruby-identifier">newproxy</span>=<span class="ruby-keyword kw">nil</span>)
+51:     <span class="ruby-ivar">@uri</span>.<span class="ruby-identifier">host</span> = <span class="ruby-ivar">@host</span> = <span class="ruby-identifier">newhost</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">newhost</span>
+52:     <span class="ruby-ivar">@uri</span>.<span class="ruby-identifier">port</span> = <span class="ruby-ivar">@port</span> = <span class="ruby-identifier">newport</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">newport</span>
+53:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">newproxy</span>
+54:       <span class="ruby-ivar">@proxy</span> = <span class="ruby-constant">URI</span>.<span class="ruby-identifier">parse</span>(<span class="ruby-identifier">newproxy</span>)
+55:       <span class="ruby-ivar">@proxy_host</span> = <span class="ruby-ivar">@proxy</span>.<span class="ruby-identifier">host</span>
+56:       <span class="ruby-ivar">@proxy_port</span> = <span class="ruby-ivar">@proxy</span>.<span class="ruby-identifier">port</span>
+57:     <span class="ruby-keyword kw">end</span>
+58:     <span class="ruby-ivar">@uri</span>
+59:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -333,17 +338,17 @@ way you want.
             onclick="toggleCode('M000008-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000008-source">
 <pre>
-     <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 109</span>
-109:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">system_describe</span>
-110:     <span class="ruby-ivar">@service_description</span> = <span class="ruby-identifier">:in_progress</span>
-111:     <span class="ruby-ivar">@service_description</span> = <span class="ruby-identifier">method_missing</span>(<span class="ruby-value str">'system.describe'</span>)
-112:     <span class="ruby-ivar">@service_description</span>[<span class="ruby-value str">'procs'</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">p</span><span class="ruby-operator">|</span>
-113:       <span class="ruby-ivar">@post_procs</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">p</span>[<span class="ruby-value str">'name'</span>]
-114:       <span class="ruby-ivar">@get_procs</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">p</span>[<span class="ruby-value str">'name'</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">p</span>[<span class="ruby-value str">'idempotent'</span>]
-115:     <span class="ruby-keyword kw">end</span>
-116:     <span class="ruby-ivar">@service_description</span>[<span class="ruby-value str">'procs'</span>].<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">p</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@procs</span>[<span class="ruby-identifier">p</span>[<span class="ruby-value str">'name'</span>]] = <span class="ruby-identifier">p</span> }
-117:     <span class="ruby-ivar">@service_description</span>
-118:   <span class="ruby-keyword kw">end</span>
+     <span class="ruby-comment cmt"># File lib/json_rpc_client.rb, line 115</span>
+115:   <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">system_describe</span>
+116:     <span class="ruby-ivar">@service_description</span> = <span class="ruby-identifier">:in_progress</span>
+117:     <span class="ruby-ivar">@service_description</span> = <span class="ruby-identifier">method_missing</span>(<span class="ruby-value str">'system.describe'</span>)
+118:     <span class="ruby-ivar">@service_description</span>[<span class="ruby-value str">'procs'</span>].<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">p</span><span class="ruby-operator">|</span>
+119:       <span class="ruby-ivar">@post_procs</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">p</span>[<span class="ruby-value str">'name'</span>]
+120:       <span class="ruby-ivar">@get_procs</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">p</span>[<span class="ruby-value str">'name'</span>] <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">p</span>[<span class="ruby-value str">'idempotent'</span>]
+121:     <span class="ruby-keyword kw">end</span>
+122:     <span class="ruby-ivar">@service_description</span>[<span class="ruby-value str">'procs'</span>].<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">p</span><span class="ruby-operator">|</span> <span class="ruby-ivar">@procs</span>[<span class="ruby-identifier">p</span>[<span class="ruby-value str">'name'</span>]] = <span class="ruby-identifier">p</span> }
+123:     <span class="ruby-ivar">@service_description</span>
+124:   <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>

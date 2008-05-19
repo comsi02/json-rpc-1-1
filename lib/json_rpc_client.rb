@@ -18,11 +18,16 @@ class JsonRpcClient
   class NotAService < Error; end
   class ServiceReturnsJunk < Error; end
   
+  
   #
   # Execute this "declaration" with a string or URI object describing the base URI
   # of the JSON-RPC service you want to connect to, e.g. 'http://213.86.231.12/my_services'.
   # NB: avoid DNS host names at all costs, since Net::HTTP can be slow in resolving them.
   # If there is a proxy, pass :proxy => 'http://123.45.32.45:8080' or similar.
+  # If you pass :no_auto_config => true, no attempt will be made to contact the service
+  # to obtain a description of its available services, which means POST will be used
+  # for all requests. This is sometimes useful when a server is non-compliant and does not
+  # provide a system.describe call.
   #
   def self.json_rpc_service(base_uri, opts={})
     @uri = URI.parse base_uri
@@ -34,6 +39,7 @@ class JsonRpcClient
     @procs = {}
     @get_procs = []
     @post_procs = []
+    @no_auto_config = opts[:no_auto_config]
     @uri
   end
   
@@ -62,7 +68,7 @@ class JsonRpcClient
   # queues or continuation style error handling, amongst other things. 
   #
   def self.method_missing(name, *args)
-    system_describe unless @service_description
+    system_describe unless (@no_auto_config || @service_description)
     name = name.to_s
     req_wrapper = @get_procs.include?(name) ? Get.new(self, name, args) : Post.new(self, name, args)
     req = req_wrapper.req
