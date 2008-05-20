@@ -193,6 +193,7 @@ class JsonRpcClient
       @req = Net::HTTP::Post.new(klass.service_path)
       super()
       @req.add_field 'Content-Type', 'application/json'
+      args = args[0] if args.length == 1 && args[0].is_a?(Hash)
       @req.body = { :version => '1.1', :method => name, :params => args }.to_json
     end
     
