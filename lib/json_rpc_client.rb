@@ -185,7 +185,11 @@ class JsonRpcClient
   # Unless we know that a procedure is idempotent, a POST call will be used.
   # In case anyone wonders, GET and POST requests are roughly of the same
   # speed - GETs require slightly more processing on the client side, while 
-  # POSTs require slightly more processing on the service side.
+  # POSTs require slightly more processing on the service side. Positional
+  # args are supported, as well as named args. If a call has only a hash
+  # as its only argument, the key/val pairs are used as name/value pairs.
+  # All other situations pass hashes in their entirety as just one of the args 
+  # in the arglist.
   #
   class Post < Request
     
