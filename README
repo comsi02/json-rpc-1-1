@@ -1,4 +1,4 @@
-= JsonRpc
+= JsonRpc (x)
 
 This is a complete implementation of the JSON-RPC 1.1 protocol, as described in
 the JSON-RPC 1.1 Specification of 7 August 2007, which may be found at
