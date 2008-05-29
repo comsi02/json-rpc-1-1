@@ -93,10 +93,10 @@ module JsonRpcService
       raise Error, "JSON-RPC service must have an :sdversion of 1.0" if @sd[:sdversion] != '1.0'
       raise Error, "JSON-RPC service must have a :name" if @sd[:name].blank?
       raise Error, "JSON-RPC service must have an :id" if @sd[:id].blank?
+      @disabled = opts[:disabled]
       @procs = {}
       self.add_procedure :name => 'system.describe', :proc => lambda { system_describe },
                          :return => {:type => 'obj'}
-      @disabled = opts[:disabled]
     end
     
     
