@@ -11,25 +11,58 @@ module JsonRpcService
   
   
   module ClassMethods
-    def service
-      @service
-    end
-    
+    #
+    # Declare that this controller is a JSON-RPC service. See the Server#initialize
+    # method for valid options.
+    #
     def json_rpc_service(opts={})
       session :off
       include JsonRpcService::InstanceMethods
       @service = Service.new opts
     end
     
+    #
+    # Declares a callable API method for this service. See the README for valid
+    # options.
+    #
     def json_rpc_procedure(opts={})
       @service.add_procedure opts
     end
+    
+    #
+    # Turns off the service, making it return HTTP 503 as a status code.
+    #
+    def disable
+      @service.disabled = true
+    end
+    
+    #
+    # Turns on the service, making it accept API calls as usual.
+    #
+    def enable
+      @service.disabled = false
+    end
+    
+    private
+      #
+      # Returns the service object for this class.
+      #
+      def service
+        @service
+      end
   end
   
   
   module InstanceMethods
+    #
+    # This method is the action which should be called for all incoming API calls.
+    # Use the config/routes.rb to direct all calls for the service to this method.
+    # It will be automatically included in the controller class.
+    #
     def receive_json_rpc_request
-      req = self.class.service.process request, params
+      service = self.class.service
+      render(:nothing => true, :status => 503) and return if service.disabled
+      req = service.process request, params
       headers['Content-Type'] = 'application/json'
       render :text => req.response, :status => req.status_code
     end
@@ -47,12 +80,14 @@ module JsonRpcService
     class Error < RuntimeError; end
 
     attr_reader :procs
-        
+    attr :disabled
         
     # 
     # Sets up a new service. Raises exceptions if the service description is
     # incorrect or incomplete. The :id must be a valid UUID according to the JSON-RPC spec.
     # UUIDs can be generated at http://www.itu.int/ITU-T/asn1/cgi-bin/uuid_generate.
+    # If :disabled is true, the service will respond with a HTTP 503 status code.
+    # Enabled status can be turned off and on using 
     #    
     def initialize(opts={})
       @sd = {:sdversion => '1.0'}.merge(opts)
@@ -62,6 +97,7 @@ module JsonRpcService
       @procs = {}
       self.add_procedure :name => 'system.describe', :proc => lambda { system_describe },
                          :return => {:type => 'obj'}
+      @disabled = opts[:disabled]
     end
     
     
