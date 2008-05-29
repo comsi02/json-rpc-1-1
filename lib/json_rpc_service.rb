@@ -61,7 +61,7 @@ module JsonRpcService
     #
     def receive_json_rpc_request
       service = self.class.service
-      render(:nothing => true, :status => 503) and return if service.disabled
+      render(:text => 'JSON-RPC server disabled', :status => 503) and return if service.disabled
       req = service.process request, params
       headers['Content-Type'] = 'application/json'
       render :text => req.response, :status => req.status_code
