@@ -38,9 +38,9 @@ e.g.:
 	end
 	
 For the exact meaning of the args, read the JSON-RPC 1.1 specification - it's very
-straightforward. The only addition is the :disabled option: if true, this service will
+straightforward. The only addition is the +:disabled+ option: if true, this service will
 not accept any calls. You can enable and disable a service dynamically too, using
-ExampleServiceController.enable and ExampleServiceController.disable, respectively.
++ExampleServiceController.enable+ and +ExampleServiceController.disable+, respectively.
 
 
 Create a controller for each service you need. Then declare routes for them in Rails'
