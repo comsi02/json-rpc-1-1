@@ -43,13 +43,12 @@ module JsonRpcService
       @service.disabled = false
     end
     
-    private
-      #
-      # Returns the service object for this class.
-      #
-      def service
-        @service
-      end
+    #
+    # Returns the service object for this class.
+    #
+    def service
+      @service
+    end
   end
   
   
