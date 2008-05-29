@@ -22,7 +22,8 @@ e.g.:
 	                   :version => '0.1',                                      # optional
 	                   :summary => 'A simple demonstration service.',          # optional
 	                   :help => 'http://127.0.0.1:3000/services/index.html',   # optional
-	                   :address => 'http://127.0.0.1:3000/services'            # optional
+	                   :address => 'http://127.0.0.1:3000/services',           # optional
+	                   :disabled => false                                      # optional
 
 	  json_rpc_procedure :name => 'sum', :proc => :+,                          # required
 	                     :summary => 'Sums two numbers.',                      # optional
@@ -37,7 +38,10 @@ e.g.:
 	end
 	
 For the exact meaning of the args, read the JSON-RPC 1.1 specification - it's very
-straightforward. 
+straightforward. The only addition is the :disabled option: if true, this service will
+not accept any calls. You can enable and disable a service dynamically too, using
+ExampleServiceController.enable and ExampleServiceController.disable, respectively.
+
 
 Create a controller for each service you need. Then declare routes for them in Rails'
 config/routes.rb file:
