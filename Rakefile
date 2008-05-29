@@ -12,7 +12,7 @@ Rake::TestTask.new(:test) do |t|
   t.verbose = true
 end
 
-desc 'Generate documentation for the json_rpc plugin.'
+desc 'Generate documentation for the JSON-RPC plugin.'
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = 'JsonRpc'
