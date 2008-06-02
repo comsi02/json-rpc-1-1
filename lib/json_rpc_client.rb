@@ -116,6 +116,7 @@ class JsonRpcClient
     @service_description = :in_progress
     @service_description = method_missing('system.describe')
     raise "JSON-RPC server failed to return a service description" unless @service_description
+    raise "JSON-RPC server failed to return a standard-compliant service description" unless @service_description['procs'].kind_of?(Array)
     @service_description['procs'].each do |p|
       @post_procs << p['name']
       @get_procs << p['name'] if p['idempotent']
