@@ -79,7 +79,7 @@ class JsonRpcClient
         Net::HTTP.start(@host, @port, @proxy_host, @proxy_port) do |http|
           res = http.request req
           if res.content_type != 'application/json'
-            @logger.debug "JSON-RPC returned non-JSON data: #{res.body}" if @logger
+            @logger.debug "JSON-RPC server returned non-JSON data: #{res.body}" if @logger
             raise NotAService, "Returned #{res.content_type} (status code #{res.code}: #{res.message}) rather than application/json"
           end
           json = JSON.parse(res.body) rescue raise(ServiceReturnsJunk)
@@ -116,6 +116,13 @@ class JsonRpcClient
   #
   def self.logger
     @logger
+  end
+  
+  #
+  # Host and port as a string
+  #
+  def self.host_and_port
+    "#{@host}:#{@port}"
   end
       
       
@@ -190,7 +197,7 @@ class JsonRpcClient
         query = '?' + pairs.join('&')
       end
       uri = klass.service_path + '/' + name + query
-      klass.logger.debug "JSON-RPC GET request to URI #{uri}" if klass.logger
+      klass.logger.debug "JSON-RPC GET request to URI #{klass.host_and_port}/#{uri}" if klass.logger
       @req = Net::HTTP::Get.new(uri)
       super()
     end
@@ -217,7 +224,7 @@ class JsonRpcClient
       args = args[0] if args.length == 1 && args[0].is_a?(Hash)
       body = { :version => '1.1', :method => name, :params => args }.to_json
       @req.body = body
-      klass.logger.debug "JSON-RPC POST request to URI #{klass.service_path} with body #{body}" if klass.logger
+      klass.logger.debug "JSON-RPC POST request to URI #{klass.host_and_port}/#{klass.service_path} with body #{body}" if klass.logger
     end
     
   end
