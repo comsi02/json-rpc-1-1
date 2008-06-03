@@ -78,7 +78,10 @@ class JsonRpcClient
       begin
         Net::HTTP.start(@host, @port, @proxy_host, @proxy_port) do |http|
           res = http.request req
-          raise NotAService, "Returned #{res.content_type} rather than application/json" unless res.content_type == 'application/json'
+          if res.content_type != 'application/json'
+            @logger.debug "JSON-RPC returned non-JSON data: #{res.body}" if @logger
+            raise NotAService, "Returned #{res.content_type} (status code #{res.code}: #{res.message}) rather than application/json"
+          end
           json = JSON.parse(res.body) rescue raise(ServiceReturnsJunk)
           raise ServiceError, "JSON-RPC error #{json['error']['code']}: #{json['error']['message']}" if json['error']
           @logger.debug "JSON-RPC result: #{self.class}.#{name} => #{res.body}" if @logger
