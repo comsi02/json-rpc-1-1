@@ -40,7 +40,7 @@ class JsonRpcClient
     @get_procs = []
     @post_procs = []
     @no_auto_config = opts[:no_auto_config]
-    @debug = opts[:debug]
+    @logger = opts[:debug]
     @uri
   end
   
@@ -71,7 +71,7 @@ class JsonRpcClient
   def self.method_missing(name, *args)
     system_describe unless (@no_auto_config || @service_description)
     name = name.to_s
-    @debug.debug "JSON-RPC call: #{self.class}.#{name}(#{args.join(',')})" if @debug
+    @logger.debug "JSON-RPC call: #{self.class}.#{name}(#{args.join(',')})" if @logger
     req_wrapper = @get_procs.include?(name) ? Get.new(self, name, args) : Post.new(self, name, args)
     req = req_wrapper.req
     begin
@@ -81,7 +81,7 @@ class JsonRpcClient
           raise NotAService, "Returned #{res.content_type} rather than application/json" unless res.content_type == 'application/json'
           json = JSON.parse(res.body) rescue raise(ServiceReturnsJunk)
           raise ServiceError, "JSON-RPC error #{json['error']['code']}: #{json['error']['message']}" if json['error']
-          @debug.debug "JSON-RPC result: #{self.class}.#{name} => #{res.body}" if @debug
+          @logger.debug "JSON-RPC result: #{self.class}.#{name} => #{res.body}" if @logger
           return (block_given? ? yield(json['result']) : json['result'])
         end
       rescue Errno::ECONNREFUSED
@@ -111,8 +111,8 @@ class JsonRpcClient
   #
   # The logger
   #
-  def self.debug
-    @debug
+  def self.logger
+    @logger
   end
       
       
@@ -187,7 +187,7 @@ class JsonRpcClient
         query = '?' + pairs.join('&')
       end
       uri = klass.service_path + '/' + name + query
-      klass.debug "JSON-RPC GET request to URI #{uri}" if klass.debug
+      klass.logger.debug "JSON-RPC GET request to URI #{uri}" if klass.logger
       @req = Net::HTTP::Get.new(uri)
       super()
     end
@@ -214,7 +214,7 @@ class JsonRpcClient
       args = args[0] if args.length == 1 && args[0].is_a?(Hash)
       body = { :version => '1.1', :method => name, :params => args }.to_json
       @req.body = body
-      klass.debug "JSON-RPC POST request to URI #{klass.service_path} with body #{body}" if klass.debug
+      klass.logger.debug "JSON-RPC POST request to URI #{klass.service_path} with body #{body}" if klass.logger
     end
     
   end
