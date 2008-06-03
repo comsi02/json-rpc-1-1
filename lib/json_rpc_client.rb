@@ -71,7 +71,7 @@ class JsonRpcClient
   def self.method_missing(name, *args)
     system_describe unless (@no_auto_config || @service_description)
     name = name.to_s
-    @logger.debug "JSON-RPC call: #{self.class}.#{name}(#{args.join(',')})" if @logger
+    @logger.debug "JSON-RPC call: #{self}.#{name}(#{args.join(',')})" if @logger
     req_wrapper = @get_procs.include?(name) ? Get.new(self, name, args) : Post.new(self, name, args)
     req = req_wrapper.req
     begin
